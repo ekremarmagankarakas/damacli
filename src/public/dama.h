@@ -13,13 +13,13 @@ enum class Result { Ongoing, WhiteWins, BlackWins, Draw };
 
 struct Config {
   ViewMode view = ViewMode::Unicode;
-  int engine_depth = 3;            // 0 disables engine (two-player)
+  int engine_depth = 3;  // 0 disables engine (two-player)
   Side engine_side = Side::Black;
 };
 
 struct CommandResult {
   bool ok = true;
-  std::string message;             // human feedback, may be empty
+  std::string message;  // human feedback, may be empty
 };
 
 class Session {
@@ -45,7 +45,7 @@ class Session {
   bool IsOver() const;
   Result Outcome() const;
   Side ToMove() const;
-  std::vector<std::string> History() const;     // newest last
+  std::vector<std::string> History() const;  // newest last
 
  private:
   struct Impl;

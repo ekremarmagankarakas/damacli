@@ -30,24 +30,37 @@ bool IsHighlighted(int row, int col, const std::optional<Move>& last) {
   if (!last) {
     return false;
   }
-  if (last->from.row == row && last->from.col == col) return true;
-  if (last->to.row == row && last->to.col == col) return true;
+  if (last->from.row == row && last->from.col == col) {
+    return true;
+  }
+  if (last->to.row == row && last->to.col == col) {
+    return true;
+  }
   for (const auto& v : last->via) {
-    if (v.row == row && v.col == col) return true;
+    if (v.row == row && v.col == col) {
+      return true;
+    }
   }
   for (const auto& cap : last->captures) {
-    if (cap.row == row && cap.col == col) return true;
+    if (cap.row == row && cap.col == col) {
+      return true;
+    }
   }
   return false;
 }
 
 const char* Glyph(PieceKind k) {
   switch (k) {
-    case PieceKind::WMan:  return "⛀";
-    case PieceKind::WKing: return "⛁";
-    case PieceKind::BMan:  return "⛂";
-    case PieceKind::BKing: return "⛃";
-    case PieceKind::Empty: return " ";
+    case PieceKind::WMan:
+      return "⛀";
+    case PieceKind::WKing:
+      return "⛁";
+    case PieceKind::BMan:
+      return "⛂";
+    case PieceKind::BKing:
+      return "⛃";
+    case PieceKind::Empty:
+      return " ";
   }
   return " ";
 }

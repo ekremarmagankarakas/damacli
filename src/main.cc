@@ -8,6 +8,7 @@
 #include "minimax_engine.h"
 #include "stdin_input.h"
 #include "text_view.h"
+#include "tui_app.h"
 #include "unicode_view.h"
 
 using namespace dama;
@@ -15,29 +16,34 @@ using namespace dama;
 namespace {
 
 const char* kUsage =
-    "Usage: damacli [--text] [--engine DEPTH] [--no-engine] [--play-black]\n"
-    "                [--help]\n"
-    "Defaults: Unicode view, minimax engine at depth 3 playing Black.\n"
+    "Usage: damacli [--tui] [--text] [--engine DEPTH] [--no-engine]\n"
+    "                [--play-black] [--help]\n"
+    "Defaults: Unicode CLI view, minimax engine at depth 3 playing Black.\n"
     "\n"
-    "  --text           Use ASCII view instead of Unicode\n"
+    "  --tui            Full-screen TUI with cursor nav + text input\n"
+    "  --text           Use ASCII view instead of Unicode (CLI only)\n"
     "  --engine DEPTH   Set minimax search depth (default 3)\n"
     "  --no-engine      Disable engine (two-player mode)\n"
     "  --play-black     You play Black; engine plays White\n"
     "  --help, -h       Show this help\n"
     "\n"
-    "In-game commands: move (e.g. a3a4 or a3xa5xc5), undo, reset, history,\n"
-    "                  resign, quit, exit, help.\n";
+    "In-game commands (CLI + TUI): move (e.g. a3a4 or a3xa5xc5),\n"
+    "                              undo, reset, history, resign, quit,\n"
+    "                              exit, help.\n";
 
 }  // namespace
 
 int main(int argc, char* argv[]) {
   bool unicode = true;
+  bool tui = false;
   int engine_depth = 3;
   Color engine_side = Color::kBlack;
 
   for (int i = 1; i < argc; ++i) {
     std::string_view arg = argv[i];
-    if (arg == "--text" || arg == "--ascii") {
+    if (arg == "--tui") {
+      tui = true;
+    } else if (arg == "--text" || arg == "--ascii") {
       unicode = false;
     } else if (arg == "--unicode") {
       unicode = true;  // explicit; already the default
@@ -65,14 +71,19 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  std::unique_ptr<View> view =
-      unicode ? std::unique_ptr<View>(std::make_unique<UnicodeView>())
-              : std::unique_ptr<View>(std::make_unique<TextView>());
-
   std::unique_ptr<Engine> engine;
   if (engine_depth > 0) {
     engine = std::make_unique<MinimaxEngine>(engine_depth);
   }
+
+  if (tui) {
+    TuiApp(std::move(engine), engine_side).Run();
+    return 0;
+  }
+
+  std::unique_ptr<View> view =
+      unicode ? std::unique_ptr<View>(std::make_unique<UnicodeView>())
+              : std::unique_ptr<View>(std::make_unique<TextView>());
 
   Game(std::move(view), std::make_unique<StdinInput>(), std::move(engine),
        engine_side)

@@ -25,13 +25,24 @@ int MinimaxEngine::Evaluate(const Board& board) const {
   for (int row = 0; row < Board::kSize; ++row) {
     for (int col = 0; col < Board::kSize; ++col) {
       auto pk = board.At(row, col);
-      if (!pk) continue;
+      if (!pk) {
+        continue;
+      }
       switch (*pk) {
-        case PieceKind::WMan:  score += kManValue; break;
-        case PieceKind::WKing: score += kKingValue; break;
-        case PieceKind::BMan:  score -= kManValue; break;
-        case PieceKind::BKing: score -= kKingValue; break;
-        case PieceKind::Empty: break;
+        case PieceKind::WMan:
+          score += kManValue;
+          break;
+        case PieceKind::WKing:
+          score += kKingValue;
+          break;
+        case PieceKind::BMan:
+          score -= kManValue;
+          break;
+        case PieceKind::BKing:
+          score -= kKingValue;
+          break;
+        case PieceKind::Empty:
+          break;
       }
     }
   }

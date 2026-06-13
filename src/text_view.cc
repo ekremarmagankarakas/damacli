@@ -11,11 +11,16 @@ namespace dama {
 namespace {
 char Glyph(PieceKind k) {
   switch (k) {
-    case PieceKind::WMan:  return 'o';
-    case PieceKind::WKing: return 'O';
-    case PieceKind::BMan:  return 'x';
-    case PieceKind::BKing: return 'X';
-    case PieceKind::Empty: return '.';
+    case PieceKind::WMan:
+      return 'o';
+    case PieceKind::WKing:
+      return 'O';
+    case PieceKind::BMan:
+      return 'x';
+    case PieceKind::BKing:
+      return 'X';
+    case PieceKind::Empty:
+      return '.';
   }
   return '.';
 }

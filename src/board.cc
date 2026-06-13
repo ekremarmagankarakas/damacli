@@ -12,7 +12,7 @@ constexpr int SqIdx(int row, int col) { return row * 8 + col; }
 constexpr std::uint64_t Bit(int sq) { return 1ULL << sq; }
 constexpr std::uint64_t BitRC(int row, int col) { return Bit(SqIdx(row, col)); }
 
-constexpr int kDR[4] = {1, -1, 0, 0};   // N, S, E, W
+constexpr int kDR[4] = {1, -1, 0, 0};  // N, S, E, W
 constexpr int kDC[4] = {0, 0, 1, -1};
 
 // Man movement directions: white moves N+E+W, black moves S+E+W.
@@ -33,9 +33,7 @@ inline std::uint64_t AllOcc(const Pos& p) {
   return p.w_men | p.b_men | p.w_king | p.b_king;
 }
 
-inline bool IsEmpty(const Pos& p, int sq) {
-  return !(AllOcc(p) & Bit(sq));
-}
+inline bool IsEmpty(const Pos& p, int sq) { return !(AllOcc(p) & Bit(sq)); }
 
 inline bool IsEnemy(const Pos& p, int sq, Color side) {
   std::uint64_t b = Bit(sq);
@@ -53,9 +51,15 @@ enum class PieceBb { WMen, BMen, WKing, BKing };
 
 PieceBb PieceAt(const Pos& p, int sq) {
   std::uint64_t b = Bit(sq);
-  if (p.w_men & b) return PieceBb::WMen;
-  if (p.b_men & b) return PieceBb::BMen;
-  if (p.w_king & b) return PieceBb::WKing;
+  if (p.w_men & b) {
+    return PieceBb::WMen;
+  }
+  if (p.b_men & b) {
+    return PieceBb::BMen;
+  }
+  if (p.w_king & b) {
+    return PieceBb::WKing;
+  }
   return PieceBb::BKing;
 }
 
@@ -70,10 +74,18 @@ void RemoveAt(Pos& p, int sq) {
 void SetPiece(Pos& p, int sq, PieceBb kind) {
   std::uint64_t b = Bit(sq);
   switch (kind) {
-    case PieceBb::WMen:  p.w_men  |= b; break;
-    case PieceBb::BMen:  p.b_men  |= b; break;
-    case PieceBb::WKing: p.w_king |= b; break;
-    case PieceBb::BKing: p.b_king |= b; break;
+    case PieceBb::WMen:
+      p.w_men |= b;
+      break;
+    case PieceBb::BMen:
+      p.b_men |= b;
+      break;
+    case PieceBb::WKing:
+      p.w_king |= b;
+      break;
+    case PieceBb::BKing:
+      p.b_king |= b;
+      break;
   }
 }
 
@@ -83,14 +95,15 @@ constexpr std::array<int, 3> ManDirs(Color c) {
 
 // Build via vector from accumulated landings (drop final landing — it's `to`).
 std::vector<Square> MakeVia(const std::vector<Square>& landings) {
-  if (landings.size() <= 1) return {};
+  if (landings.size() <= 1) {
+    return {};
+  }
   return std::vector<Square>(landings.begin(), landings.end() - 1);
 }
 
 void ManCaptureChain(Pos pos, int sq, Color side, Square origin,
                      std::vector<Square>& landings,
-                     std::vector<Square>& captures,
-                     std::vector<Move>& out) {
+                     std::vector<Square>& captures, std::vector<Move>& out) {
   int r = sq / 8, c = sq % 8;
   int last_rank = (side == Color::kWhite) ? 7 : 0;
   bool extended = false;
@@ -99,11 +112,17 @@ void ManCaptureChain(Pos pos, int sq, Color side, Square origin,
     int dr = kDR[idx], dc = kDC[idx];
     int mr = r + dr, mc = c + dc;
     int lr = r + 2 * dr, lc = c + 2 * dc;
-    if (!InBoardRC(lr, lc)) continue;
+    if (!InBoardRC(lr, lc)) {
+      continue;
+    }
     int msq = SqIdx(mr, mc);
     int lsq = SqIdx(lr, lc);
-    if (!IsEnemy(pos, msq, side)) continue;
-    if (!IsEmpty(pos, lsq)) continue;
+    if (!IsEnemy(pos, msq, side)) {
+      continue;
+    }
+    if (!IsEmpty(pos, lsq)) {
+      continue;
+    }
 
     extended = true;
     Pos next = pos;
@@ -133,8 +152,7 @@ void ManCaptureChain(Pos pos, int sq, Color side, Square origin,
 
 void KingCaptureChain(Pos pos, int sq, Color side, Square origin,
                       std::vector<Square>& landings,
-                      std::vector<Square>& captures,
-                      std::vector<Move>& out) {
+                      std::vector<Square>& captures, std::vector<Move>& out) {
   int r = sq / 8, c = sq % 8;
   bool extended = false;
 
@@ -143,15 +161,23 @@ void KingCaptureChain(Pos pos, int sq, Color side, Square origin,
     int step = 1;
     while (true) {
       int nr = r + dr * step, nc = c + dc * step;
-      if (!InBoardRC(nr, nc)) break;
+      if (!InBoardRC(nr, nc)) {
+        break;
+      }
       int nsq = SqIdx(nr, nc);
-      if (IsOwn(pos, nsq, side)) break;
+      if (IsOwn(pos, nsq, side)) {
+        break;
+      }
       if (IsEnemy(pos, nsq, side)) {
         for (int land = step + 1;; ++land) {
           int lr = r + dr * land, lc = c + dc * land;
-          if (!InBoardRC(lr, lc)) break;
+          if (!InBoardRC(lr, lc)) {
+            break;
+          }
           int lsq = SqIdx(lr, lc);
-          if (!IsEmpty(pos, lsq)) break;
+          if (!IsEmpty(pos, lsq)) {
+            break;
+          }
 
           extended = true;
           Pos next = pos;
@@ -212,8 +238,12 @@ void GenerateQuiets(const Pos& pos, Color side, std::vector<Move>& out) {
     int r = sq / 8, c = sq % 8;
     for (int idx : ManDirs(side)) {
       int nr = r + kDR[idx], nc = c + kDC[idx];
-      if (!InBoardRC(nr, nc)) continue;
-      if (occ & BitRC(nr, nc)) continue;
+      if (!InBoardRC(nr, nc)) {
+        continue;
+      }
+      if (occ & BitRC(nr, nc)) {
+        continue;
+      }
       out.push_back(
           Move{Square{r, c}, Square{nr, nc}, {}, {}, nr == last_rank});
     }
@@ -225,8 +255,12 @@ void GenerateQuiets(const Pos& pos, Color side, std::vector<Move>& out) {
     for (int idx = 0; idx < 4; ++idx) {
       for (int step = 1;; ++step) {
         int nr = r + kDR[idx] * step, nc = c + kDC[idx] * step;
-        if (!InBoardRC(nr, nc)) break;
-        if (occ & BitRC(nr, nc)) break;
+        if (!InBoardRC(nr, nc)) {
+          break;
+        }
+        if (occ & BitRC(nr, nc)) {
+          break;
+        }
         out.push_back(Move{Square{r, c}, Square{nr, nc}, {}, {}, false});
       }
     }
@@ -253,12 +287,22 @@ bool Board::InBounds(int row, int col) { return InBoardRC(row, col); }
 bool Board::InBounds(const Square& s) { return InBoardRC(s.row, s.col); }
 
 std::optional<PieceKind> Board::At(int row, int col) const {
-  if (!InBoardRC(row, col)) return std::nullopt;
+  if (!InBoardRC(row, col)) {
+    return std::nullopt;
+  }
   std::uint64_t b = BitRC(row, col);
-  if (w_men_ & b) return PieceKind::WMan;
-  if (w_king_ & b) return PieceKind::WKing;
-  if (b_men_ & b) return PieceKind::BMan;
-  if (b_king_ & b) return PieceKind::BKing;
+  if (w_men_ & b) {
+    return PieceKind::WMan;
+  }
+  if (w_king_ & b) {
+    return PieceKind::WKing;
+  }
+  if (b_men_ & b) {
+    return PieceKind::BMan;
+  }
+  if (b_king_ & b) {
+    return PieceKind::BKing;
+  }
   return PieceKind::Empty;
 }
 
@@ -288,11 +332,18 @@ void Board::ApplyNoHistory(const Move& move) {
   std::uint64_t to_b = Bit(to_sq);
 
   std::uint64_t* mover = nullptr;
-  if (w_men_ & from_b) mover = &w_men_;
-  else if (w_king_ & from_b) mover = &w_king_;
-  else if (b_men_ & from_b) mover = &b_men_;
-  else if (b_king_ & from_b) mover = &b_king_;
-  if (!mover) return;
+  if (w_men_ & from_b) {
+    mover = &w_men_;
+  } else if (w_king_ & from_b) {
+    mover = &w_king_;
+  } else if (b_men_ & from_b) {
+    mover = &b_men_;
+  } else if (b_king_ & from_b) {
+    mover = &b_king_;
+  }
+  if (!mover) {
+    return;
+  }
 
   bool was_man = (mover == &w_men_) || (mover == &b_men_);
 
@@ -328,7 +379,9 @@ void Board::ApplyNoHistory(const Move& move) {
 }
 
 void Board::Undo() {
-  if (history_.empty()) return;
+  if (history_.empty()) {
+    return;
+  }
   Restore(history_.back().pre_state);
   history_.pop_back();
 }
@@ -346,7 +399,9 @@ std::vector<Move> Board::LegalMoves() const {
     std::vector<Move> filtered;
     filtered.reserve(captures.size());
     for (auto& m : captures) {
-      if (m.captures.size() == max_n) filtered.push_back(std::move(m));
+      if (m.captures.size() == max_n) {
+        filtered.push_back(std::move(m));
+      }
     }
     return filtered;
   }
@@ -370,13 +425,19 @@ bool Board::IsLegal(const Move& move) const {
 std::optional<GameResult> Board::Result() const {
   std::uint64_t white = w_men_ | w_king_;
   std::uint64_t black = b_men_ | b_king_;
-  if (white == 0) return GameResult::kBlackWins;
-  if (black == 0) return GameResult::kWhiteWins;
+  if (white == 0) {
+    return GameResult::kBlackWins;
+  }
+  if (black == 0) {
+    return GameResult::kWhiteWins;
+  }
   if (LegalMoves().empty()) {
     return (side_to_move_ == Color::kWhite) ? GameResult::kBlackWins
                                             : GameResult::kWhiteWins;
   }
-  if (halfmove_clock_ >= 80) return GameResult::kDraw;
+  if (halfmove_clock_ >= 80) {
+    return GameResult::kDraw;
+  }
   return std::nullopt;
 }
 
