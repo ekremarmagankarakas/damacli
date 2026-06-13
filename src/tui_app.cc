@@ -1,6 +1,7 @@
 #include "tui_app.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/event.hpp>
@@ -14,6 +15,7 @@
 
 #include "board.h"
 #include "command.h"
+#include "config.h"
 #include "game_result.h"
 #include "move.h"
 #include "parser.h"
@@ -684,6 +686,90 @@ void TuiApp::Run() {
     auto right = (RenderSidePanel(*impl_) | border) |
                  size(WIDTH, EQUAL, kSidePanelWidth);
     return hbox({left, right}) | flex;
+  });
+
+  screen.Loop(renderer);
+}
+
+void RunConfigureScreen(const std::string& config_path_str) {
+  using namespace ftxui;
+
+  std::filesystem::path config_path(config_path_str);
+  Config cfg = LoadConfig(config_path);
+
+  bool tui_on = cfg.tui;
+  bool play_black = cfg.play_black;
+  int engine_depth = cfg.engine_depth;
+  std::string status_msg = "Config: " + config_path_str;
+
+  // 0 = Unicode, 1 = Text
+  int view_selected = cfg.unicode ? 0 : 1;
+  std::vector<std::string> view_entries = {"Unicode (⛂⛃)", "Text (o O / x X)"};
+
+  auto screen = ScreenInteractive::Fullscreen();
+
+  auto tui_cb = Checkbox("Default to TUI mode", &tui_on);
+  auto black_cb = Checkbox("Play as Black (engine plays White)", &play_black);
+  auto view_radio = Radiobox(&view_entries, &view_selected);
+  auto depth_dec = Button(" − ", [&] {
+    if (engine_depth > 0) {
+      --engine_depth;
+    }
+  });
+  auto depth_inc = Button(" + ", [&] {
+    if (engine_depth < 10) {
+      ++engine_depth;
+    }
+  });
+
+  auto save_btn = Button("Save & Exit", [&] {
+    Config out;
+    out.tui = tui_on;
+    out.unicode = (view_selected == 0);
+    out.play_black = play_black;
+    out.engine_depth = engine_depth;
+    try {
+      SaveConfig(out, config_path);
+    } catch (...) {
+      status_msg = "Error: could not write " + config_path_str;
+      return;
+    }
+    screen.ExitLoopClosure()();
+  });
+
+  auto cancel_btn = Button("Cancel", [&] { screen.ExitLoopClosure()(); });
+
+  auto container = Container::Vertical({
+      tui_cb,
+      view_radio,
+      black_cb,
+      Container::Horizontal({depth_dec, depth_inc}),
+      Container::Horizontal({save_btn, cancel_btn}),
+  });
+
+  auto renderer = Renderer(container, [&] {
+    std::string depth_label =
+        engine_depth == 0 ? "disabled" : std::to_string(engine_depth);
+    return vbox({
+               text("damacli — Configuration") | bold | center,
+               separator(),
+               tui_cb->Render() | xflex,
+               separator(),
+               text("CLI view (when TUI is off)") | dim,
+               view_radio->Render(),
+               separator(),
+               black_cb->Render() | xflex,
+               hbox({text("Engine depth: "), depth_dec->Render(),
+                     text(" " + depth_label + " ") | bold | center |
+                         size(WIDTH, EQUAL, 10),
+                     depth_inc->Render()}),
+               separator(),
+               hbox({save_btn->Render(), text("  "), cancel_btn->Render()}) |
+                   center,
+               separator(),
+               text(status_msg) | dim | center,
+           }) |
+           border | center;
   });
 
   screen.Loop(renderer);
