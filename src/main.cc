@@ -16,11 +16,12 @@ using namespace dama;
 namespace {
 
 const char* kUsage =
-    "Usage: damacli [--tui] [--text] [--engine DEPTH] [--no-engine]\n"
+    "Usage: damacli [--no-tui|--cli] [--text] [--engine DEPTH] [--no-engine]\n"
     "                [--play-black] [--help]\n"
-    "Defaults: Unicode CLI view, minimax engine at depth 3 playing Black.\n"
+    "Defaults: Full-screen TUI, minimax engine at depth 3 playing Black.\n"
     "\n"
-    "  --tui            Full-screen TUI with cursor nav + text input\n"
+    "  --no-tui, --cli  Use the CLI prompt instead of the full-screen TUI\n"
+    "  --tui            Force the TUI (already the default)\n"
     "  --text           Use ASCII view instead of Unicode (CLI only)\n"
     "  --engine DEPTH   Set minimax search depth (default 3)\n"
     "  --no-engine      Disable engine (two-player mode)\n"
@@ -35,7 +36,7 @@ const char* kUsage =
 
 int main(int argc, char* argv[]) {
   bool unicode = true;
-  bool tui = false;
+  bool tui = true;
   int engine_depth = 3;
   Color engine_side = Color::kBlack;
 
@@ -43,6 +44,8 @@ int main(int argc, char* argv[]) {
     std::string_view arg = argv[i];
     if (arg == "--tui") {
       tui = true;
+    } else if (arg == "--no-tui" || arg == "--cli") {
+      tui = false;
     } else if (arg == "--text" || arg == "--ascii") {
       unicode = false;
     } else if (arg == "--unicode") {
