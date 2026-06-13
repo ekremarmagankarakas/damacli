@@ -333,7 +333,9 @@ struct TuiApp::Impl {
     std::vector<Square> tentative = path;
     tentative.push_back(cursor);
 
-    const Move* exact = nullptr;
+    // Copy any exact match by value: holding a pointer into the temporary
+    // returned by LegalMoves() would dangle once the for-range ends.
+    std::optional<Move> exact;
     bool extends = false;
     for (const auto& m : board.LegalMoves()) {
       std::vector<Square> full;
@@ -356,15 +358,14 @@ struct TuiApp::Impl {
         continue;
       }
       if (full.size() == tentative.size()) {
-        exact = &m;
+        exact = m;
       } else {
         extends = true;
       }
     }
 
     if (exact) {
-      Move m = *exact;
-      CommitMove(m);
+      CommitMove(*exact);
       return;
     }
     if (extends) {
