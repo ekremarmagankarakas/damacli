@@ -9,6 +9,7 @@
 #include "move.h"
 #include "square.h"
 
+namespace dama {
 namespace {
 
 // Tokenize a move string into squares. Forms accepted:
@@ -72,3 +73,5 @@ Command Parse(std::string_view input, const Board& board) {
   }
   return ParseError::kIllegal;
 }
+
+}  // namespace dama

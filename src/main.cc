@@ -10,10 +10,12 @@
 #include "text_view.h"
 #include "unicode_view.h"
 
+using namespace dama;
+
 namespace {
 
 const char* kUsage =
-    "Usage: chesscli [--text] [--engine DEPTH] [--no-engine] [--play-black]\n"
+    "Usage: damacli [--text] [--engine DEPTH] [--no-engine] [--play-black]\n"
     "                [--help]\n"
     "Defaults: Unicode view, minimax engine at depth 3 playing Black.\n"
     "\n"
@@ -23,7 +25,7 @@ const char* kUsage =
     "  --play-black     You play Black; engine plays White\n"
     "  --help, -h       Show this help\n"
     "\n"
-    "In-game commands: move (e.g. e2e4 or e7e8q), undo, reset, history,\n"
+    "In-game commands: move (e.g. a3a4 or a3xa5xc5), undo, reset, history,\n"
     "                  resign, quit, exit, help.\n";
 
 }  // namespace

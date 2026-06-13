@@ -1,10 +1,11 @@
 #pragma once
 
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "square.h"
+
+namespace dama {
 
 struct Move {
   Square from;
@@ -30,3 +31,5 @@ inline std::string MoveToUCI(const Move& m) {
   s += m.to.ToAlgebraic();
   return s;
 }
+
+}  // namespace dama

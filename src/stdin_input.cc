@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+namespace dama {
+
 std::optional<std::string> StdinInput::ReadLine() {
   std::string input;
   if (!std::getline(std::cin, input)) {
@@ -9,3 +11,5 @@ std::optional<std::string> StdinInput::ReadLine() {
   }
   return input;
 }
+
+}  // namespace dama

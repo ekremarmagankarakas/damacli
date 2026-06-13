@@ -7,6 +7,7 @@
 #include "board.h"
 #include "piece_kind.h"
 
+namespace dama {
 namespace {
 
 constexpr int kInf = 1'000'000;
@@ -110,3 +111,5 @@ Move MinimaxEngine::Choose(Board& board) {
   }
   return best_move;
 }
+
+}  // namespace dama

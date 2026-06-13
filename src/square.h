@@ -4,6 +4,8 @@
 #include <string>
 #include <string_view>
 
+namespace dama {
+
 struct Square {
   int row;  // rank 0 to 7
   int col;  // file 0 to 7 (a to h)
@@ -29,3 +31,5 @@ struct Square {
     return Square{row, col};
   }
 };
+
+}  // namespace dama

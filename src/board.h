@@ -1,8 +1,6 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <vector>
 
@@ -13,6 +11,8 @@
 #include "move.h"
 #include "piece_kind.h"
 #include "square.h"
+
+namespace dama {
 
 class Board {
  public:
@@ -59,3 +59,5 @@ class Board {
   void Setup();
   void ApplyNoHistory(const Move& move);
 };
+
+}  // namespace dama

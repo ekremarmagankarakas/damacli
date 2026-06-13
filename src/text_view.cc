@@ -1,11 +1,13 @@
 #include "text_view.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "board.h"
 #include "game_result.h"
 #include "piece_kind.h"
 
+namespace dama {
 namespace {
 char Glyph(PieceKind k) {
   switch (k) {
@@ -19,20 +21,26 @@ char Glyph(PieceKind k) {
 }
 }  // namespace
 
-void TextView::Render(const Board& board, bool game_over) {
+std::string TextView::RenderToString(const Board& board, bool game_over) const {
+  std::ostringstream os;
   for (int row = Board::kSize - 1; row >= 0; --row) {
-    std::cout << (row + 1) << ' ';
+    os << (row + 1) << ' ';
     for (int col = 0; col < Board::kSize; ++col) {
       auto pk = board.At(row, col);
-      std::cout << (pk ? Glyph(*pk) : '?') << ' ';
+      os << (pk ? Glyph(*pk) : '?') << ' ';
     }
-    std::cout << '\n';
+    os << '\n';
   }
-  std::cout << "  a b c d e f g h\n";
+  os << "  a b c d e f g h\n";
   if (!game_over) {
-    std::cout << (board.SideToMove() == Color::kWhite ? "White" : "Black")
-              << " to move\n";
+    os << (board.SideToMove() == Color::kWhite ? "White" : "Black")
+       << " to move\n";
   }
+  return os.str();
+}
+
+void TextView::Render(const Board& board, bool game_over) {
+  std::cout << RenderToString(board, game_over);
 }
 
 void TextView::ShowMessage(std::string_view msg) { std::cout << msg << '\n'; }
@@ -73,7 +81,9 @@ void TextView::ShowResult(GameResult result) {
       std::cout << "BLACK WON!\n";
       return;
     case GameResult::kDraw:
-      std::cout << "DRAW BY STALEMATE!\n";
+      std::cout << "DRAW!\n";
       return;
   }
 }
+
+}  // namespace dama

@@ -14,14 +14,30 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
-# Engine sources (everything except main.cc).
-file(GLOB_RECURSE ENGINE_SOURCES
-    "src/*.cc"
+# Engine sources: all src/*.cc except main.cc and the public facade.
+file(GLOB_RECURSE ENGINE_SOURCES "src/*.cc")
+list(REMOVE_ITEM ENGINE_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/public/dama.cc"
 )
-list(REMOVE_ITEM ENGINE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc")
 
+# Internal static library used by the CLI executable and tests.
 add_library(damacli_engine STATIC ${ENGINE_SOURCES})
 target_include_directories(damacli_engine PUBLIC src)
+
+# Public-facing static library: same engine sources plus the pimpl facade.
+# Consumers only see src/public (which contains dama.h); all engine headers
+# stay private.
+add_library(damacli_lib STATIC
+    ${ENGINE_SOURCES}
+    src/public/dama.cc
+)
+target_include_directories(damacli_lib
+    PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/src/public
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_compile_features(damacli_lib PUBLIC cxx_std_20)
+add_library(dama::dama ALIAS damacli_lib)
 
 # Main executable.
 add_executable(damacli src/main.cc)

@@ -2,12 +2,14 @@
 
 #include <iostream>
 #include <optional>
+#include <sstream>
 #include <string>
 
 #include "board.h"
 #include "game_result.h"
 #include "piece_kind.h"
 
+namespace dama {
 namespace {
 
 // Background colors for board squares.
@@ -41,10 +43,10 @@ bool IsHighlighted(int row, int col, const std::optional<Move>& last) {
 
 const char* Glyph(PieceKind k) {
   switch (k) {
-    case PieceKind::WMan:  return "⛀";  // ⛀
-    case PieceKind::WKing: return "⛁";  // ⛁
-    case PieceKind::BMan:  return "⛂";  // ⛂
-    case PieceKind::BKing: return "⛃";  // ⛃
+    case PieceKind::WMan:  return "⛀";
+    case PieceKind::WKing: return "⛁";
+    case PieceKind::BMan:  return "⛂";
+    case PieceKind::BKing: return "⛃";
     case PieceKind::Empty: return " ";
   }
   return " ";
@@ -66,10 +68,9 @@ const char* FgFor(PieceKind k) {
 
 }  // namespace
 
-void UnicodeView::Render(const Board& board, bool game_over) {
-  // Clear visible screen + scrollback, move cursor to home.
-  std::cout << "\033[2J\033[3J\033[H";
-
+std::string UnicodeView::RenderToString(const Board& board,
+                                        bool game_over) const {
+  std::ostringstream os;
   std::optional<Move> last;
   const auto& history = board.History();
   if (!history.empty()) {
@@ -77,30 +78,37 @@ void UnicodeView::Render(const Board& board, bool game_over) {
   }
 
   for (int row = Board::kSize - 1; row >= 0; --row) {
-    std::cout << FG_LABEL << (row + 1) << RESET << ' ';
+    os << FG_LABEL << (row + 1) << RESET << ' ';
     for (int col = 0; col < Board::kSize; ++col) {
       bool light = (row + col) % 2 == 1;
       const char* bg = IsHighlighted(row, col, last)
                            ? BG_HIGHLIGHT
                            : (light ? BG_LIGHT : BG_DARK);
       auto pk = board.At(row, col).value_or(PieceKind::Empty);
-      std::cout << bg;
+      os << bg;
       if (pk == PieceKind::Empty) {
-        std::cout << "   ";
+        os << "   ";
       } else {
-        std::cout << FgFor(pk) << ' ' << Glyph(pk) << ' ';
+        os << FgFor(pk) << ' ' << Glyph(pk) << ' ';
       }
-      std::cout << RESET;
+      os << RESET;
     }
-    std::cout << '\n';
+    os << '\n';
   }
-  std::cout << FG_LABEL << "   a  b  c  d  e  f  g  h" << RESET << '\n';
+  os << FG_LABEL << "   a  b  c  d  e  f  g  h" << RESET << '\n';
 
   if (!game_over) {
     bool white_to_move = board.SideToMove() == Color::kWhite;
-    std::cout << FG_WHITE << (white_to_move ? "White" : "Black") << " to move"
-              << RESET << '\n';
+    os << FG_WHITE << (white_to_move ? "White" : "Black") << " to move" << RESET
+       << '\n';
   }
+  return os.str();
+}
+
+void UnicodeView::Render(const Board& board, bool game_over) {
+  // Clear visible screen + scrollback, move cursor to home.
+  std::cout << "\033[2J\033[3J\033[H";
+  std::cout << RenderToString(board, game_over);
 
   // Drain pending messages below the board (single composed frame).
   for (const auto& m : pending_) {
@@ -154,7 +162,9 @@ void UnicodeView::ShowResult(GameResult result) {
       pending_.emplace_back("BLACK WON!");
       return;
     case GameResult::kDraw:
-      pending_.emplace_back("DRAW BY STALEMATE!");
+      pending_.emplace_back("DRAW!");
       return;
   }
 }
+
+}  // namespace dama

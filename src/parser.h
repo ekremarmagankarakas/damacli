@@ -4,6 +4,8 @@
 
 #include "command.h"
 
+namespace dama {
+
 class Board;
 
 // Dispatch a full input line: commands (quit/undo/reset/...) or a move.
@@ -15,3 +17,4 @@ class Board;
 // ParseError::kIllegal is returned.
 Command Parse(std::string_view input, const Board& board);
 
+}  // namespace dama

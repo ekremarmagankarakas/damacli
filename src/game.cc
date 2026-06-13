@@ -9,6 +9,7 @@
 #include "move.h"
 #include "parser.h"
 
+namespace dama {
 namespace {
 template <class... Ts>
 struct Overloaded : Ts... {
@@ -19,13 +20,14 @@ Overloaded(Ts...) -> Overloaded<Ts...>;
 
 const char* kInGameHelp =
     "Commands:\n"
-    "  <from><to>  Make a move (e.g. e2e4 or e7e8)\n"
-    "  undo               Undo last move\n"
-    "  reset              Reset game to starting position\n"
-    "  history            Show move history\n"
-    "  resign             Resign current side\n"
-    "  help               Show this help\n"
-    "  quit, exit         Exit";
+    "  <from><to>     Quiet move (e.g. a3a4)\n"
+    "  <from>x<to>... Capture chain (e.g. a3xa5xc5)\n"
+    "  undo           Undo last move\n"
+    "  reset          Reset game to starting position\n"
+    "  history        Show move history\n"
+    "  resign         Resign current side\n"
+    "  help           Show this help\n"
+    "  quit, exit     Exit";
 }  // namespace
 
 Game::Game(std::unique_ptr<View> view,
@@ -100,3 +102,5 @@ void Game::HandleMove(const Move& move, std::string_view raw) {
     is_game_over_ = true;
   }
 }
+
+}  // namespace dama

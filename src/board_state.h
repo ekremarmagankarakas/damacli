@@ -1,9 +1,10 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
 
 #include "color.h"
+
+namespace dama {
 
 struct BoardState {
   std::uint64_t w_men_;
@@ -22,3 +23,5 @@ inline bool operator==(const BoardState& a, const BoardState& b) {
          a.w_king_ == b.w_king_ && a.b_king_ == b.b_king_ &&
          a.side_to_move == b.side_to_move;
 }
+
+}  // namespace dama

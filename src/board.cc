@@ -5,6 +5,7 @@
 #include <bit>
 #include <cstdint>
 
+namespace dama {
 namespace {
 
 constexpr int SqIdx(int row, int col) { return row * 8 + col; }
@@ -383,3 +384,5 @@ GameResult Board::HandleResign() const {
   return (side_to_move_ == Color::kWhite) ? GameResult::kBlackWins
                                           : GameResult::kWhiteWins;
 }
+
+}  // namespace dama

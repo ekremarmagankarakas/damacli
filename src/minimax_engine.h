@@ -2,6 +2,10 @@
 
 #include "engine.h"
 
+namespace dama {
+
+class Board;
+
 class MinimaxEngine final : public Engine {
  public:
   explicit MinimaxEngine(int depth);
@@ -13,3 +17,5 @@ class MinimaxEngine final : public Engine {
   int Search(Board& board, int depth, int alpha, int beta);
   int Evaluate(const Board& board) const;
 };
+
+}  // namespace dama
