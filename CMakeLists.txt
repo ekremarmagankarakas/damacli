@@ -42,16 +42,20 @@ target_compile_features(damacli_lib PUBLIC cxx_std_20)
 add_library(dama::dama ALIAS damacli_lib)
 
 # ftxui (TUI library) — pulled in only for the CLI executable.
-include(FetchContent)
-FetchContent_Declare(ftxui
-    GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI.git
-    GIT_TAG        v5.0.0
-)
-# ftxui builds examples by default; skip them to keep the build fast.
-set(FTXUI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(FTXUI_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(FTXUI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(ftxui)
+# Guard with a target check so a parent project (e.g. TUIG) that already added
+# its own vendored ftxui first wins, and we don't fetch a second copy.
+if(NOT TARGET ftxui::component)
+  include(FetchContent)
+  FetchContent_Declare(ftxui
+      GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI.git
+      GIT_TAG        v5.0.0
+  )
+  # ftxui builds examples by default; skip them to keep the build fast.
+  set(FTXUI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+  set(FTXUI_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+  set(FTXUI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(ftxui)
+endif()
 
 # Main executable: engine sources + main.cc + tui_app.cc.
 add_executable(damacli
