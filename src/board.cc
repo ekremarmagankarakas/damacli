@@ -292,18 +292,18 @@ std::optional<PieceKind> Board::At(int row, int col) const {
   }
   std::uint64_t b = BitRC(row, col);
   if (w_men_ & b) {
-    return PieceKind::WMan;
+    return PieceKind::kWMan;
   }
   if (w_king_ & b) {
-    return PieceKind::WKing;
+    return PieceKind::kWKing;
   }
   if (b_men_ & b) {
-    return PieceKind::BMan;
+    return PieceKind::kBMan;
   }
   if (b_king_ & b) {
-    return PieceKind::BKing;
+    return PieceKind::kBKing;
   }
-  return PieceKind::Empty;
+  return PieceKind::kEmpty;
 }
 
 BoardState Board::Snapshot() const {

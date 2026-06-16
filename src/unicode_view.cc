@@ -51,15 +51,15 @@ bool IsHighlighted(int row, int col, const std::optional<Move>& last) {
 
 const char* Glyph(PieceKind k) {
   switch (k) {
-    case PieceKind::WMan:
+    case PieceKind::kWMan:
       return "⛀";
-    case PieceKind::WKing:
+    case PieceKind::kWKing:
       return "⛁";
-    case PieceKind::BMan:
+    case PieceKind::kBMan:
       return "⛂";
-    case PieceKind::BKing:
+    case PieceKind::kBKing:
       return "⛃";
-    case PieceKind::Empty:
+    case PieceKind::kEmpty:
       return " ";
   }
   return " ";
@@ -67,13 +67,13 @@ const char* Glyph(PieceKind k) {
 
 const char* FgFor(PieceKind k) {
   switch (k) {
-    case PieceKind::WMan:
-    case PieceKind::WKing:
+    case PieceKind::kWMan:
+    case PieceKind::kWKing:
       return FG_WHITE;
-    case PieceKind::BMan:
-    case PieceKind::BKing:
+    case PieceKind::kBMan:
+    case PieceKind::kBKing:
       return FG_BLACK;
-    case PieceKind::Empty:
+    case PieceKind::kEmpty:
       return "";
   }
   return "";
@@ -97,9 +97,9 @@ std::string UnicodeView::RenderToString(const Board& board,
       const char* bg = IsHighlighted(row, col, last)
                            ? BG_HIGHLIGHT
                            : (light ? BG_LIGHT : BG_DARK);
-      auto pk = board.At(row, col).value_or(PieceKind::Empty);
+      auto pk = board.At(row, col).value_or(PieceKind::kEmpty);
       os << bg;
-      if (pk == PieceKind::Empty) {
+      if (pk == PieceKind::kEmpty) {
         os << "   ";
       } else {
         os << FgFor(pk) << ' ' << Glyph(pk) << ' ';

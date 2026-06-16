@@ -2,6 +2,6 @@
 
 namespace dama {
 
-enum class PieceKind { Empty, WMan, WKing, BMan, BKing };
+enum class PieceKind { kEmpty, kWMan, kWKing, kBMan, kBKing };
 
 }  // namespace dama

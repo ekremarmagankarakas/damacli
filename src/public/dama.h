@@ -7,14 +7,14 @@
 
 namespace dama {
 
-enum class Side { White, Black };
+enum class Side { kWhite, kBlack };
 enum class ViewMode { Unicode, Ascii };
 enum class Result { Ongoing, WhiteWins, BlackWins, Draw };
 
 struct Config {
   ViewMode view = ViewMode::Unicode;
   int engine_depth = 3;  // 0 disables engine (two-player)
-  Side engine_side = Side::Black;
+  Side engine_side = Side::kBlack;
 };
 
 struct CommandResult {

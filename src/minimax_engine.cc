@@ -29,19 +29,19 @@ int MinimaxEngine::Evaluate(const Board& board) const {
         continue;
       }
       switch (*pk) {
-        case PieceKind::WMan:
+        case PieceKind::kWMan:
           score += kManValue;
           break;
-        case PieceKind::WKing:
+        case PieceKind::kWKing:
           score += kKingValue;
           break;
-        case PieceKind::BMan:
+        case PieceKind::kBMan:
           score -= kManValue;
           break;
-        case PieceKind::BKing:
+        case PieceKind::kBKing:
           score -= kKingValue;
           break;
-        case PieceKind::Empty:
+        case PieceKind::kEmpty:
           break;
       }
     }

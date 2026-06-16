@@ -67,8 +67,8 @@ TEST_CASE("Parser rejects a quiet move that has no matching legal move") {
 
 TEST_CASE("Parser accepts a single capture") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan}}));
   Command cmd = Parse("a3xa5", board);
   REQUIRE(std::holds_alternative<Move>(cmd));
   const Move& move = std::get<Move>(cmd);
@@ -81,9 +81,9 @@ TEST_CASE("Parser accepts a single capture") {
 
 TEST_CASE("Parser accepts a multi-capture chain") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan},
-                                          {Sq("b5"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan},
+                                          {Sq("b5"), PieceKind::kBMan}}));
   Command cmd = Parse("a3xa5xc5", board);
   REQUIRE(std::holds_alternative<Move>(cmd));
   const Move& move = std::get<Move>(cmd);
@@ -98,9 +98,9 @@ TEST_CASE("Parser accepts a multi-capture chain") {
 
 TEST_CASE("Parser rejects a shorter capture when a longer one is mandatory") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan},
-                                          {Sq("b5"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan},
+                                          {Sq("b5"), PieceKind::kBMan}}));
   CHECK(ErrorOf(Parse("a3xa5", board)) == ParseError::kIllegal);
 }
 
@@ -110,8 +110,8 @@ TEST_CASE("Parser rejects capture syntax when no capture is available") {
 
 TEST_CASE("Parser rejects quiet syntax when a capture is mandatory") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan}}));
   CHECK(ErrorOf(Parse("a3a4", board)) == ParseError::kIllegal);
 }
 

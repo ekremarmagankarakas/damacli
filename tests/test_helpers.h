@@ -31,19 +31,19 @@ inline BoardState MakeState(
   for (const auto& [square, kind] : pieces) {
     std::uint64_t bit = 1ULL << (square.row * 8 + square.col);
     switch (kind) {
-      case PieceKind::WMan:
+      case PieceKind::kWMan:
         s.w_men_ |= bit;
         break;
-      case PieceKind::BMan:
+      case PieceKind::kBMan:
         s.b_men_ |= bit;
         break;
-      case PieceKind::WKing:
+      case PieceKind::kWKing:
         s.w_king_ |= bit;
         break;
-      case PieceKind::BKing:
+      case PieceKind::kBKing:
         s.b_king_ |= bit;
         break;
-      case PieceKind::Empty:
+      case PieceKind::kEmpty:
         break;
     }
   }
@@ -52,7 +52,7 @@ inline BoardState MakeState(
 
 inline PieceKind PieceAt(const Board& board, std::string_view algebraic) {
   Square s = Sq(algebraic);
-  return board.At(s.row, s.col).value_or(PieceKind::Empty);
+  return board.At(s.row, s.col).value_or(PieceKind::kEmpty);
 }
 
 }  // namespace dama

@@ -137,13 +137,13 @@ std::vector<std::string> RenderArt(const PieceArt& art) {
 
 std::vector<std::string> ArtForPieceKind(PieceKind pk) {
   switch (pk) {
-    case PieceKind::WMan:
-    case PieceKind::BMan:
+    case PieceKind::kWMan:
+    case PieceKind::kBMan:
       return RenderArt(kManArt);
-    case PieceKind::WKing:
-    case PieceKind::BKing:
+    case PieceKind::kWKing:
+    case PieceKind::kBKing:
       return RenderArt(kKingArt);
-    case PieceKind::Empty: {
+    case PieceKind::kEmpty: {
       std::string blank;
       for (int i = 0; i < kArtBraille; ++i) {
         blank += BrailleChar(0);
@@ -299,11 +299,11 @@ struct TuiApp::Impl {
 
     if (path.empty()) {
       auto pk = board.At(cursor.row, cursor.col);
-      if (!pk || *pk == PieceKind::Empty) {
+      if (!pk || *pk == PieceKind::kEmpty) {
         status = "No piece on " + cursor.ToAlgebraic();
         return;
       }
-      bool white = *pk == PieceKind::WMan || *pk == PieceKind::WKing;
+      bool white = *pk == PieceKind::kWMan || *pk == PieceKind::kWKing;
       Color side = white ? Color::kWhite : Color::kBlack;
       if (side != board.SideToMove()) {
         status = "Not your piece";
@@ -470,7 +470,7 @@ namespace {
 ftxui::Element RenderCell(const TuiApp::Impl& s, int row, int col) {
   using namespace ftxui;
 
-  PieceKind pk = s.board.At(row, col).value_or(PieceKind::Empty);
+  PieceKind pk = s.board.At(row, col).value_or(PieceKind::kEmpty);
 
   bool is_cursor = (s.cursor_row == row && s.cursor_col == col);
   bool on_path = s.IsOnPath(row, col);
@@ -495,8 +495,8 @@ ftxui::Element RenderCell(const TuiApp::Impl& s, int row, int col) {
   }
 
   ftxui::Color fg = ftxui::Color::Default;
-  if (pk != PieceKind::Empty) {
-    bool white = pk == PieceKind::WMan || pk == PieceKind::WKing;
+  if (pk != PieceKind::kEmpty) {
+    bool white = pk == PieceKind::kWMan || pk == PieceKind::kWKing;
     fg = white ? ftxui::Color::White : ftxui::Color::Black;
   }
 

@@ -28,10 +28,10 @@ template <class... Ts>
 Overloaded(Ts...) -> Overloaded<Ts...>;
 
 Color FromSide(Side s) {
-  return s == Side::White ? Color::kWhite : Color::kBlack;
+  return s == Side::kWhite ? Color::kWhite : Color::kBlack;
 }
 
-Side ToSide(Color c) { return c == Color::kWhite ? Side::White : Side::Black; }
+Side ToSide(Color c) { return c == Color::kWhite ? Side::kWhite : Side::kBlack; }
 
 Result ToResult(GameResult r) {
   switch (r) {

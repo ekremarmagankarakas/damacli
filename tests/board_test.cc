@@ -24,8 +24,8 @@ TEST_CASE("Initial position: White to move and no captures are available") {
 
 TEST_CASE("White man captures forward (north)") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].from == Sq("a3"));
@@ -36,8 +36,8 @@ TEST_CASE("White man captures forward (north)") {
 
 TEST_CASE("White man captures sideways east") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("d3"), PieceKind::WMan},
-                                          {Sq("e3"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("d3"), PieceKind::kWMan},
+                                          {Sq("e3"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].to == Sq("f3"));
@@ -47,8 +47,8 @@ TEST_CASE("White man captures sideways east") {
 
 TEST_CASE("White man captures sideways west") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("d3"), PieceKind::WMan},
-                                          {Sq("c3"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("d3"), PieceKind::kWMan},
+                                          {Sq("c3"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].to == Sq("b3"));
@@ -58,8 +58,8 @@ TEST_CASE("White man captures sideways west") {
 
 TEST_CASE("White man does not capture backward") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("d4"), PieceKind::WMan},
-                                          {Sq("d3"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("d4"), PieceKind::kWMan},
+                                          {Sq("d3"), PieceKind::kBMan}}));
   for (const Move& m : board.LegalMoves()) {
     CHECK(m.captures.empty());
   }
@@ -67,8 +67,8 @@ TEST_CASE("White man does not capture backward") {
 
 TEST_CASE("Black man captures south") {
   Board board;
-  board.Restore(MakeState(Color::kBlack, {{Sq("a6"), PieceKind::BMan},
-                                          {Sq("a5"), PieceKind::WMan}}));
+  board.Restore(MakeState(Color::kBlack, {{Sq("a6"), PieceKind::kBMan},
+                                          {Sq("a5"), PieceKind::kWMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].to == Sq("a4"));
@@ -80,9 +80,9 @@ TEST_CASE("Mandatory capture filters out quiet moves") {
   Board board;
   // a3 has a capture; h3 has only quiet moves available. Mandatory capture
   // should suppress h3's quiet moves entirely.
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan},
-                                          {Sq("h3"), PieceKind::WMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan},
+                                          {Sq("h3"), PieceKind::kWMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].from == Sq("a3"));
@@ -91,9 +91,9 @@ TEST_CASE("Mandatory capture filters out quiet moves") {
 
 TEST_CASE("Mandatory longest capture filters out shorter chains") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan},
-                                          {Sq("b5"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan},
+                                          {Sq("b5"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].captures.size() == 2);
@@ -102,47 +102,47 @@ TEST_CASE("Mandatory longest capture filters out shorter chains") {
 
 TEST_CASE("Apply removes captured piece and flips side to move") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   board.Apply(moves[0]);
-  CHECK(PieceAt(board, "a3") == PieceKind::Empty);
-  CHECK(PieceAt(board, "a4") == PieceKind::Empty);
-  CHECK(PieceAt(board, "a5") == PieceKind::WMan);
+  CHECK(PieceAt(board, "a3") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "a4") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "a5") == PieceKind::kWMan);
   CHECK(board.SideToMove() == Color::kBlack);
 }
 
 TEST_CASE("Apply on a multi-capture removes every captured piece") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan},
-                                          {Sq("b5"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan},
+                                          {Sq("b5"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   board.Apply(moves[0]);
-  CHECK(PieceAt(board, "a3") == PieceKind::Empty);
-  CHECK(PieceAt(board, "a4") == PieceKind::Empty);
-  CHECK(PieceAt(board, "a5") == PieceKind::Empty);
-  CHECK(PieceAt(board, "b5") == PieceKind::Empty);
-  CHECK(PieceAt(board, "c5") == PieceKind::WMan);
+  CHECK(PieceAt(board, "a3") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "a4") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "a5") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "b5") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "c5") == PieceKind::kWMan);
 }
 
 TEST_CASE("Man promotes to king when a capture ends on the last rank") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a6"), PieceKind::WMan},
-                                          {Sq("a7"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a6"), PieceKind::kWMan},
+                                          {Sq("a7"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   REQUIRE(moves.size() == 1);
   CHECK(moves[0].promotes);
   board.Apply(moves[0]);
-  CHECK(PieceAt(board, "a8") == PieceKind::WKing);
+  CHECK(PieceAt(board, "a8") == PieceKind::kWKing);
 }
 
 TEST_CASE("King captures by flying along a file") {
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a1"), PieceKind::WKing},
-                                          {Sq("a5"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a1"), PieceKind::kWKing},
+                                          {Sq("a5"), PieceKind::kBMan}}));
   auto moves = board.LegalMoves();
   // King can land on any empty square past the captured piece: a6, a7, a8.
   REQUIRE(moves.size() == 3);
@@ -181,9 +181,9 @@ TEST_CASE(
   // temporary's destruction. Under ASan/UBSan this test fails if the pattern
   // ever regresses.
   Board board;
-  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::WMan},
-                                          {Sq("a4"), PieceKind::BMan},
-                                          {Sq("b5"), PieceKind::BMan}}));
+  board.Restore(MakeState(Color::kWhite, {{Sq("a3"), PieceKind::kWMan},
+                                          {Sq("a4"), PieceKind::kBMan},
+                                          {Sq("b5"), PieceKind::kBMan}}));
   std::optional<Move> picked;
   for (const Move& m : board.LegalMoves()) {
     if (m.from == Sq("a3") && m.to == Sq("c5")) {
@@ -197,9 +197,9 @@ TEST_CASE(
   CHECK(picked->captures[0] == Sq("a4"));
   CHECK(picked->captures[1] == Sq("b5"));
   board.Apply(*picked);
-  CHECK(PieceAt(board, "c5") == PieceKind::WMan);
-  CHECK(PieceAt(board, "a4") == PieceKind::Empty);
-  CHECK(PieceAt(board, "b5") == PieceKind::Empty);
+  CHECK(PieceAt(board, "c5") == PieceKind::kWMan);
+  CHECK(PieceAt(board, "a4") == PieceKind::kEmpty);
+  CHECK(PieceAt(board, "b5") == PieceKind::kEmpty);
 }
 
 }  // namespace dama
