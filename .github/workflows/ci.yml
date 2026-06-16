@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (tests on)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DDAMACLI_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure
+
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        run: |
+          set -euo pipefail
+          files=$(find src -type f \( -name "*.cc" -o -name "*.h" \))
+          if [ -z "$files" ]; then
+            echo "No source files found"
+            exit 0
+          fi
+          clang-format --dry-run --Werror $files

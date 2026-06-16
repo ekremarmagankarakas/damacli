@@ -31,7 +31,9 @@ Color FromSide(Side s) {
   return s == Side::kWhite ? Color::kWhite : Color::kBlack;
 }
 
-Side ToSide(Color c) { return c == Color::kWhite ? Side::kWhite : Side::kBlack; }
+Side ToSide(Color c) {
+  return c == Color::kWhite ? Side::kWhite : Side::kBlack;
+}
 
 Result ToResult(GameResult r) {
   switch (r) {
